@@ -1,0 +1,111 @@
+/* -------------- VARIABLES --------------  */
+
+:root {
+    --color-dark: #05141a;
+    --color-medium: #0b2f3d;
+    --color-bright: #1f81a4;
+    --txt-color: #FFFFFF;
+    --font-big: 4rem;
+    --font-medium: 2rem;
+    --font-small: 1.2rem;
+    --board-size: 4;
+}
+
+/* -------------- GENERAL --------------  */
+
+* {
+    color: var(--txt-color);
+    font-family: monospace;
+    margin: 0;
+}
+
+body {
+    background-color: var(--color-dark);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* -------------- GAME FIELD --------------  */
+
+#game-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    aspect-ratio: 1;
+    background-color: var(--color-medium);
+    border-radius: 25px;
+    display: grid;
+    grid-template-columns: repeat(var(--board-size), 1fr);
+    gap: 6px;
+    padding: 2rem;
+}
+
+.tile-container {
+    background-color: var(--color-bright);
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    font-size: var(--font-big);
+    user-select: none;
+    font-weight: bold;
+    position: relative;
+}
+
+.tile-container.held {
+    transform: scale(97%);
+}
+
+.tile {
+    width: 70%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+}
+
+.line {
+    position: absolute;
+    width: calc(450px / var(--board-size) + 3px);
+    height: 15px;
+    background-color: var(--color-bright);
+    filter: brightness(0.8);
+    border-radius: 20px;
+    opacity: 0.9;
+    z-index: 100;
+}
+
+/* -------------- SCORE FIELD --------------  */
+
+#score-container {
+    background-color: var(--color-bright);
+    margin-left: calc(50vw - 400px / 2);
+    margin-top: 5vh;
+    width: 400px;
+    height: 100px;
+    border-radius: 25px;
+    position: relative;
+    font-weight: bold;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#word-text {
+    font-size: var(--font-small);
+    margin-left: 25%;
+}
+
+#score-text {
+    font-size: var(--font-medium);
+    margin-left: 25%;
+}
+
+#timer {
+    position: absolute;
+    right: 0;
+    bottom: calc(-1 * var(--font-medium) - 4px);
+    right: var(--font-medium);
+    font-size: var(--font-medium);
+}
