@@ -103,7 +103,8 @@ function handleMouseEnter(event) {
 }
 
 function drawLine(a, b) {
-    a = a.parentNode;
+    if (a.classList.contains("tile"))
+        a = a.parentNode;
     const line = document.createElement("div");
     line.className = "line";
     b.append(line);
@@ -187,15 +188,15 @@ function setTileColor(tile) {
     if (!validWords.has(currentWord) || currentWord.length < 3) {
         tile.style.filter = "brightness(0.75)";
         if (tile.children.length !== 1)
-            tile.children[1].style.filter = "brightness(0.75)";
+            tile.children[1].style.backgroundColor = "#ea3c3c";
     } else if (foundWords.includes(currentWord)) {
         tile.style.backgroundColor = "rgba(252, 255, 79, 0.7)";
         if (tile.children.length !== 1)
-            tile.children[1].style.backgroundColor = "rgba(252, 255, 79, 0.7)";
+            tile.children[1].style.backgroundColor = "white";
     } else {
-        tile.style.backgroundColor = "rgba(0, 255, 55, 0.6)";
+        tile.style.backgroundColor = "rgba(12, 179, 88, 1)";
         if (tile.children.length !== 1)
-            tile.children[1].style.backgroundColor = "rgba(0, 255, 55, 0.6)";
+            tile.children[1].style.backgroundColor = "white";
     }
 }
 

@@ -69,9 +69,8 @@ body {
     width: calc(450px / var(--board-size) + 3px);
     height: 15px;
     background-color: var(--color-bright);
-    filter: brightness(0.8);
     border-radius: 20px;
-    opacity: 0.9;
+    opacity: 0.8;
     z-index: 100;
 }
 

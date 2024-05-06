@@ -5,7 +5,7 @@ import { startGame } from './modules/initGameplay.js';
 // Size of the board.
 const size = 5;
 
-const seed = "mlp";
+const seed = "horsefriends";
 
 document.querySelector(':root').style.setProperty('--board-size', size);
 
