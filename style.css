@@ -108,3 +108,24 @@ body {
     right: var(--font-medium);
     font-size: var(--font-medium);
 }
+
+/* -------------- WORD BOX --------------  */
+
+.word-box {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -125%);
+    background-color: #444;
+    padding: 10px;
+    text-transform: uppercase;
+    font-size: var(--font-medium);
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.word-box.fade-away {
+    transition: opacity 0.5s, transform 0.5s;
+    opacity: 0;
+    transform: translate(-50%, -200%) scale(125%);
+}

@@ -14,6 +14,9 @@ let currentWord = "";
 let validWords, previousTile, size;
 let alreadyVisited = [];
 let foundWords = [];
+let wordBoxes = [];
+const greenColor = "rgba(12, 179, 88, 1)";
+const yellowColor = "rgba(252, 255, 79, 0.7)";
 
 function fetchSize(a) {
     size = a;
@@ -57,6 +60,7 @@ function handleMouseDown(event) {
     document.querySelectorAll(".tile").forEach((tile) => {
         tile.addEventListener("mouseenter", handleMouseEnter); 
     });
+    createWordBox();
 }
 
 function handleMouseUp() {
@@ -76,6 +80,9 @@ function handleMouseUp() {
         if (tile.parentNode.children.length !== 1)
             tile.parentNode.children[1].remove();
     });
+
+    if (wordBoxes.length !== 0)
+        removeWordBox();
 }
 
 function handleMouseEnter(event) {
@@ -100,6 +107,38 @@ function handleMouseEnter(event) {
     for (let i = 0; i < alreadyVisited.length; i++)
         setTileColor(alreadyVisited[i].parentNode);
     previousTile = event.target;
+    updateWordBox();
+}
+
+function createWordBox() {
+    const wordBox = document.createElement("div");
+    wordBox.innerText = currentWord;
+    wordBox.className = "word-box";
+    document.getElementById("game-container").append(wordBox);
+    wordBoxes.push(wordBox);
+}
+
+function updateWordBox() {
+    const box = wordBoxes[0];
+    box.innerText = currentWord;
+    if (foundWords.includes(currentWord)) {
+        box.style.backgroundColor = yellowColor;
+    } else if (validWords.has(currentWord)) {
+        box.style.backgroundColor = greenColor;
+        box.innerText += ` (+${getScore()})`;
+    } else {
+        box.style.backgroundColor = "#444";
+    }
+}
+
+function removeWordBox() {
+    const box = wordBoxes.shift();
+    box.classList.add("fade-away");
+    let timeout;
+    timeout = setTimeout(() => {
+        if (box !== undefined)
+            box.remove();
+    }, 500);
 }
 
 function drawLine(a, b) {
@@ -152,22 +191,6 @@ function drawLine(a, b) {
     }
 
     line.style.transform = transformVal;
-
-//    if (compareArray(direction, [-1, 0])) {
-//        line.style.width = line.clientHeight + line.clientWidth + "px";
-//        line.style.transform = `translate(calc(-50% + ${line.clientHeight / 2}px))`;
-//    } else if (compareArray(direction, [-1, -1])) {
-//        line.style.width = `calc(${Math.SQRT2} * ${line.clientWidth}px + ${line.clientHeight/2}px)`;
-//        line.style.transform = `rotate(45deg) translate(calc(-50% + 2 * ${Math.sqrt(line.clientHeight)}px), ${Math.sqrt(line.clientHeight)}px)`;
-//    } else if (compareArray(direction, [0, -1])) {
-//        line.style.transform = `translate(calc(-50% - ${line.clientHeight}px / 2), calc(100% - ${line.clientHeight}px)) rotate(90deg)`;
-//        line.style.width = `calc(${line.clientHeight}px * (1 - 1/8) + ${line.clientWidth}px)`;
-//    } else if (compareArray(direction, [1, -1])) {
-//        line.style.transform = `translate(25%, calc(-600% - ${line.clientHeight}px)) rotate(315deg)`;
-//        line.style.width = `calc(${Math.SQRT2} * ${line.clientWidth}px + ${line.clientHeight}px`;
-//    }
-
-
 }
 
 function compareArray(a1, a2) {
@@ -190,11 +213,11 @@ function setTileColor(tile) {
         if (tile.children.length !== 1)
             tile.children[1].style.backgroundColor = "#ea3c3c";
     } else if (foundWords.includes(currentWord)) {
-        tile.style.backgroundColor = "rgba(252, 255, 79, 0.7)";
+        tile.style.backgroundColor = yellowColor;
         if (tile.children.length !== 1)
             tile.children[1].style.backgroundColor = "white";
     } else {
-        tile.style.backgroundColor = "rgba(12, 179, 88, 1)";
+        tile.style.backgroundColor = greenColor;
         if (tile.children.length !== 1)
             tile.children[1].style.backgroundColor = "white";
     }

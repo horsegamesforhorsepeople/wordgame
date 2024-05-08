@@ -2,73 +2,129 @@
 const generateBoard = (seed, size) => {
     setSeed(seed);
 
-    // Define the probability distribution of each letter in the English language
-    const letterFrequencies = {
-        a: 0.08167,
-        b: 0.01492,
-        c: 0.02782,
-        d: 0.04253,
-        e: 0.12702,
-        f: 0.02228,
-        g: 0.02015,
-        h: 0.06094,
-        i: 0.06966,
-        j: 0.00153,
-        k: 0.00772,
-        l: 0.04025,
-        m: 0.02406,
-        n: 0.06749,
-        o: 0.07507,
-        p: 0.01929,
-        q: 0.00095,
-        r: 0.05987,
-        s: 0.06327,
-        t: 0.09056,
-        u: 0.02758,
-        v: 0.00978,
-        w: 0.02360,
-        x: 0.00150,
-        y: 0.01974,
-        z: 0.00074
+    const letterChances = {
+        "a": 8.167,    
+        "b": 9.6589,   
+        "c": 12.4409,  
+        "d": 16.694,   
+        "e": 29.396,   
+        "f": 31.624,   
+        "g": 33.639,   
+        "h": 39.733,   
+        "i": 46.699,   
+        "j": 46.852,   
+        "k": 47.624,   
+        "l": 51.649,   
+        "m": 54.055,   
+        "n": 60.804,   
+        "o": 68.311,   
+        "p": 70.24,    
+        "q": 70.335,   
+        "r": 76.322,   
+        "s": 82.649,   
+        "t": 91.705,   
+        "u": 94.4629,  
+        "v": 95.4409,  
+        "w": 97.8009,  
+        "x": 97.9509,  
+        "y": 99.925,   
+        "z": 100.0     
     }
 
-    // Calculate the total mass of all the letter frequencies.
-    let totalMass = 0;
-    for (const letter in letterFrequencies)
-        totalMass += letterFrequencies[letter];
-
-    // The current frequency of each letter in the board.
-    let letterCounts = {};
-
-    // The board itself.
     let result = "";
-    
-    while (result.length < (size * size)) {
-        // Generate a random number between 0 and 1
-        const r = Math.random();
+    let vowelCount = 0;
+    const lowestVowelCount = size;
 
-        // Find the letter whose cumulative probability is greater than the random number.
-        let cumulativeProb = 0;
+    // change this maybe
+    const highestVowelCount = Math.floor(0.25 * size * size + 2.99);
+    const desiredVowelCount = Math.round(Math.random() * (highestVowelCount - lowestVowelCount) + lowestVowelCount);
+    const letterFrequency = {};
 
-        for (const letter in letterFrequencies) {
-            cumulativeProb += letterFrequencies[letter] / totalMass;
+    // change this maybe
+    const allowedDuplicates = Math.ceil(1.5 * Math.sqrt(size) - 1);
+    console.log(desiredVowelCount);
 
-            if (r < cumulativeProb) {
-                // Check if the letter count exceeds the limit.
-                if (letterCounts[letter] && letterCounts[letter] >= 2)
-                    continue;
+    // Generates a completely random board.
+    for (let i = 0; i < (size * size); i++) {
+        const letter = getRandomLetter(letterChances);
 
-                result += letter;
+        // Check if it's a vowel
+        if ("aeiou".includes(letter))
+            vowelCount++;
 
-                // Update the letter count
-                letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+        result += letter;
+        letterFrequency[letter] = (letterFrequency[letter] || 0) + 1;
+    }
 
-                break;
-            }
+    // Removes/adds a certain amount of vowels.
+    while (vowelCount !== desiredVowelCount) {
+        const randomIndex = Math.floor(Math.random() * 16);
+        let randomLetter = result[randomIndex];
+
+        if (vowelCount < desiredVowelCount) {
+            if ("aeiou".includes(randomLetter))
+                continue;
+
+            letterFrequency[randomLetter]--;
+
+            while (!"aeiou".includes(randomLetter))
+                randomLetter = getRandomLetter(letterChances);
+
+            vowelCount++;
+        } else {
+            if ("bcdfghjklmnpqrstvwxyz".includes(randomLetter))
+                continue;
+
+            letterFrequency[randomLetter]--;
+
+            while (!"bcdfghjklmnpqrstvwxyz".includes(randomLetter))
+                randomLetter = getRandomLetter(letterChances);
+
+            vowelCount--;
+        }
+
+        letterFrequency[randomLetter] = (letterFrequency[randomLetter] || 0) + 1;
+        result = result.substring(0, randomIndex) + randomLetter + result.substring(randomIndex + 1); 
+    }
+
+    // Adjust board to remove illegal duplicates.
+    for (const letter in letterFrequency) {
+        let amount = letterFrequency[letter];
+        if (amount <= allowedDuplicates)
+            continue;
+
+        while (amount > allowedDuplicates) {
+            let index;
+            while (result[index] !== letter)
+                index = Math.floor(Math.random() * 16);
+
+            let newLetter = letter;
+
+            if ("aeiou".includes(letter))
+                while (letterFrequency[newLetter] >= allowedDuplicates || !"aeiou".includes(newLetter))
+                    newLetter = getRandomLetter(letterChances);
+            else 
+                while (letterFrequency[newLetter] >= allowedDuplicates || !"bcdfghjklmnpqrstvwxyz".includes(newLetter))
+                    newLetter = getRandomLetter(letterChances);
+
+            letterFrequency[newLetter] = (letterFrequency[newLetter] || 0) + 1;
+            letterFrequency[letter]--;
+            amount--;
+
+            result = result.substring(0, index) + newLetter + result.substring(index + 1); 
         }
     }
 
     return result;
+}
+
+// Gets a random letter from the letter table.
+function getRandomLetter(letterChances) {
+    const value = Math.random() * 100;
+    for (const letter in letterChances) {
+        if (value < letterChances[letter])
+            return letter;
+    }
 }
 
 // Sets the "seed" to make Math.random() return the same value every time.
