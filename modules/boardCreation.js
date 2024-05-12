@@ -42,7 +42,8 @@ const generateBoard = (seed, size) => {
 
     // change this maybe
     const allowedDuplicates = Math.ceil(1.5 * Math.sqrt(size) - 1);
-    console.log(desiredVowelCount);
+    //console.log(desiredVowelCount);
+    //console.log(allowedDuplicates);
 
     // Generates a completely random board.
     for (let i = 0; i < (size * size); i++) {
@@ -55,6 +56,9 @@ const generateBoard = (seed, size) => {
         result += letter;
         letterFrequency[letter] = (letterFrequency[letter] || 0) + 1;
     }
+
+    //console.log(vowelCount);
+    //console.log(result);
 
     // Removes/adds a certain amount of vowels.
     while (vowelCount !== desiredVowelCount) {
@@ -87,6 +91,7 @@ const generateBoard = (seed, size) => {
         result = result.substring(0, randomIndex) + randomLetter + result.substring(randomIndex + 1); 
     }
 
+    //console.log(JSON.stringify(letterFrequency));
     // Adjust board to remove illegal duplicates.
     for (const letter in letterFrequency) {
         let amount = letterFrequency[letter];
@@ -98,6 +103,7 @@ const generateBoard = (seed, size) => {
             while (result[index] !== letter)
                 index = Math.floor(Math.random() * 16);
 
+            //console.log(index);
             let newLetter = letter;
 
             if ("aeiou".includes(letter))
@@ -114,6 +120,9 @@ const generateBoard = (seed, size) => {
             result = result.substring(0, index) + newLetter + result.substring(index + 1); 
         }
     }
+
+    //console.log(letterFrequency);
+    //console.log(result);
 
     return result;
 }

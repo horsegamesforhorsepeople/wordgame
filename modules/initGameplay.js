@@ -1,6 +1,7 @@
-const startGame = (size) => {
+let validWords;
+const startGame = (size, words) => {
 
-    fetchValidWords();
+    validWords = words;
     fetchSize(size);
 
     document.querySelectorAll(".tile-container").forEach((tile) => {
@@ -11,7 +12,7 @@ const startGame = (size) => {
 }
 
 let currentWord = "";
-let validWords, previousTile, size;
+let previousTile, size;
 let alreadyVisited = [];
 let foundWords = [];
 let wordBoxes = [];
@@ -20,18 +21,6 @@ const yellowColor = "rgba(252, 255, 79, 0.7)";
 
 function fetchSize(a) {
     size = a;
-}
-
-function fetchValidWords() {
-    fetch('words.txt')
-        .then(response => response.text())
-        .then(data => {
-            validWords = data.split(/\r?\n/)
-            validWords = new Set(validWords);
-        })
-        .catch(error => {
-            console.error(error);
-        });
 }
 
 // Starts the timer.
