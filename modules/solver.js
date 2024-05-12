@@ -1,17 +1,27 @@
 const foundWords = [];
 
+// To solve the board we look at an index and create a three letter long word with DFS.
+// Then we reference that to the tree hashmap (see below). If the word exists we continue
+// with the DFS one letter at a time and reference it to the same tree. In the end we should
+// find all words.
 const solveBoard = (board, words) => {
     const wordMap = parseWords(words);
     const boardIndexes = createIndexMap(board);
     const neighborMap = createNeighborMap(board);
 
+    const start = Date.now();
     for (let i = 0; i < board.length; i++) {
-        DFS(i, [], neighborMap.get(i), boardIndexes, wordMap, neighborMap);
+        DFS(i, [], neighborMap.get(i), boardIndexes, wordMap, neighborMap, words);
     }
+    const end = Date.now();
+    console.log("found words in", end - start, "ms");
     console.log(foundWords);
+
+    return foundWords;
 }
 
-function DFS(index, path, neighbors, boardIndexes, words, neighborMap) {
+// Depth First Search
+function DFS(index, path, neighbors, boardIndexes, words, neighborMap, allWords) {
     if (path.length === 0)
         path.push(index)
 
@@ -23,20 +33,47 @@ function DFS(index, path, neighbors, boardIndexes, words, neighborMap) {
         const pathNew = [...path];
         pathNew.push(index);
 
-        if (path.length < 3) {
-            DFS(index, pathNew, neighborMap.get(index), boardIndexes, words, neighborMap);
+        if (pathNew.length < 3) {
+            DFS(index, pathNew, neighborMap.get(index), boardIndexes, words, neighborMap, allWords);
         } else {
-            const word = pathToWord(path, boardIndexes);
+            const word = pathToWord(pathNew, boardIndexes);
             const stub = word.substring(0, 3);
-            if (words.has(stub)) {
-                if (words.get(stub).includes(word) && !foundWords.includes(word))
-                    foundWords.push(word);
-                DFS(index, pathNew, neighborMap.get(index), boardIndexes, words, neighborMap);
+
+            // If the first three letters don't exist in the tree then we stop.
+            if (!words.has(stub)) {
+                continue
             }
+
+            // If the current path doesn't exist in the tree then we stop.
+            if (!canContinue(word, stub, words)) {
+                continue;
+            }
+
+            // Add to the found words list.
+            if (allWords.has(word) && !foundWords.includes(word)) {
+                foundWords.push(word);
+            }
+
+            // Do the DFS from the current index.
+            DFS(index, pathNew, neighborMap.get(index), boardIndexes, words, neighborMap, allWords);
         }
     }
 }
 
+// Checks if the current word exists in the tree hashmap.
+// If it does then we can continue. If else then we stop looking into this path.
+function canContinue(word, stub, wordMap) {
+    let currentDirectory = wordMap.get(stub);
+    for (let i = 3; i < word.length; i++) {
+        if (!currentDirectory.has(word[i]))
+            return false;
+        currentDirectory = currentDirectory.get(word[i]);
+    }
+
+    return true;
+}
+
+// Converts a path of indexes, i.e. [0, 1, 2] -> "abc".
 function pathToWord(path, boardIndexes) {
     let word = "";
 
@@ -47,21 +84,49 @@ function pathToWord(path, boardIndexes) {
     return word;
 }
 
+
+// Turns the set of words into a tree structure of hashmaps.
+// Structure:
+/*
+[
+    "aaa": [
+        "b": [
+            "c": [...]
+        ],
+        "d": [
+            "e": [...],
+            "f": [...]
+        ]
+    ]
+]
+*/
 function parseWords(words) {
     const map = new Map();
 
+    const start = Date.now();
+
     for (const word of words) {
         const section = word.substring(0, 3);
-        if (!map.has(section))
-            map.set(section, []);
-        const a = map.get(section);
-        a.push(word);
-        map.set(section, a);
+        if (!map.has(section)) {
+            map.set(section, new Map());
+        }
+        let currentDirectory = map.get(section);
+        for (let i = 3; i < word.length; i++) {
+            if (!currentDirectory.has(word[i])) {
+                currentDirectory.set(word[i], new Map());
+            } 
+            currentDirectory = currentDirectory.get(word[i]);
+        }
     }
+
+    const end = Date.now();
+
+    console.log("parsed words in:", end - start, "ms");
 
     return map;
 }
 
+// Creates a hashmap where each tile index points to its letter.
 function createIndexMap(board) {
     const map = new Map();
 
@@ -71,6 +136,7 @@ function createIndexMap(board) {
     return map;
 }
 
+// Creates a hashmap where each tile points to its neighbors for easy access.
 function createNeighborMap(board) {
     const map = new Map();
     const length = board.length;
