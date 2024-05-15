@@ -124,7 +124,7 @@ function parseWords(words) {
     console.log("parsed words in:", end - start, "ms");
 
     return map;
-}
+}	
 
 // Creates a hashmap where each tile index points to its letter.
 function createIndexMap(board) {

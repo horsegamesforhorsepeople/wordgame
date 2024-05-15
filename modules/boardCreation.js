@@ -1,5 +1,6 @@
 
 const generateBoard = (seed, size) => {
+    const start = Date.now();
     setSeed(seed);
 
     const letterChances = {
@@ -31,13 +32,46 @@ const generateBoard = (seed, size) => {
         "z": 100.0     
     }
 
+    const vowelChances = {
+        "a": 21.436,
+        "e": 54.774,
+        "i": 73.058,
+        "o": 92.761,
+        "u": 100.0
+    }
+
+    const consonantChances = {
+        "b": 2.365,
+        "c": 6.773,
+        "d": 13.514,
+        "f": 17.045,
+        "g": 20.238,
+        "h": 29.896,
+        "j": 30.297,
+        "k": 33.105,
+        "l": 39.484,
+        "m": 43.297,
+        "n": 53.993,
+        "p": 57.050,
+        "q": 57.201,
+        "r": 66.689,
+        "s": 76.702,
+        "t": 91.068,
+        "v": 92.618,
+        "w": 96.358,
+        "x": 96.754,
+        "y": 99.883,
+        "z": 100.000,
+    }
+
     let result = "";
-    let vowelCount = 0;
+    let vowelIndexes = [];
     const lowestVowelCount = size;
 
     // change this maybe
     const highestVowelCount = Math.floor(0.25 * size * size + 2.99);
     const desiredVowelCount = Math.round(Math.random() * (highestVowelCount - lowestVowelCount) + lowestVowelCount);
+    //const desiredVowelCount = 25;
     const letterFrequency = {};
 
     // change this maybe
@@ -45,85 +79,43 @@ const generateBoard = (seed, size) => {
     //console.log(desiredVowelCount);
     //console.log(allowedDuplicates);
 
-    // Generates a completely random board.
-    for (let i = 0; i < (size * size); i++) {
-        const letter = getRandomLetter(letterChances);
-
-        // Check if it's a vowel
-        if ("aeiou".includes(letter))
-            vowelCount++;
-
-        result += letter;
-        letterFrequency[letter] = (letterFrequency[letter] || 0) + 1;
-    }
-
-    //console.log(vowelCount);
-    //console.log(result);
-
-    // Removes/adds a certain amount of vowels.
-    while (vowelCount !== desiredVowelCount) {
-        const randomIndex = Math.floor(Math.random() * 16);
-        let randomLetter = result[randomIndex];
-
-        if (vowelCount < desiredVowelCount) {
-            if ("aeiou".includes(randomLetter))
-                continue;
-
-            letterFrequency[randomLetter]--;
-
-            while (!"aeiou".includes(randomLetter))
-                randomLetter = getRandomLetter(letterChances);
-
-            vowelCount++;
-        } else {
-            if ("bcdfghjklmnpqrstvwxyz".includes(randomLetter))
-                continue;
-
-            letterFrequency[randomLetter]--;
-
-            while (!"bcdfghjklmnpqrstvwxyz".includes(randomLetter))
-                randomLetter = getRandomLetter(letterChances);
-
-            vowelCount--;
-        }
-
+    // Add vowels.
+    for (let i = 0; i < desiredVowelCount; i++) {
+        let randomLetter = getRandomLetter(vowelChances);
+        if (desiredVowelCount < (allowedDuplicates * 5))
+            while (letterFrequency[randomLetter] === allowedDuplicates)
+                randomLetter = getRandomLetter(vowelChances);
+        result += randomLetter;
         letterFrequency[randomLetter] = (letterFrequency[randomLetter] || 0) + 1;
-        result = result.substring(0, randomIndex) + randomLetter + result.substring(randomIndex + 1); 
     }
 
-    //console.log(JSON.stringify(letterFrequency));
-    // Adjust board to remove illegal duplicates.
-    for (const letter in letterFrequency) {
-        let amount = letterFrequency[letter];
-        if (amount <= allowedDuplicates)
-            continue;
-
-        while (amount > allowedDuplicates) {
-            let index;
-            while (result[index] !== letter)
-                index = Math.floor(Math.random() * 16);
-
-            //console.log(index);
-            let newLetter = letter;
-
-            if ("aeiou".includes(letter))
-                while (letterFrequency[newLetter] >= allowedDuplicates || !"aeiou".includes(newLetter))
-                    newLetter = getRandomLetter(letterChances);
-            else 
-                while (letterFrequency[newLetter] >= allowedDuplicates || !"bcdfghjklmnpqrstvwxyz".includes(newLetter))
-                    newLetter = getRandomLetter(letterChances);
-
-            letterFrequency[newLetter] = (letterFrequency[newLetter] || 0) + 1;
-            letterFrequency[letter]--;
-            amount--;
-
-            result = result.substring(0, index) + newLetter + result.substring(index + 1); 
-        }
+    // Add consonants.
+    for (let i = 0; i < (size * size - desiredVowelCount); i++) {
+        let randomLetter = getRandomLetter(consonantChances);
+        if (desiredVowelCount < (allowedDuplicates * 21))
+            while (letterFrequency[randomLetter] === allowedDuplicates)
+                randomLetter = getRandomLetter(consonantChances);
+        result += randomLetter;
+        letterFrequency[randomLetter] = (letterFrequency[randomLetter] || 0) + 1;
     }
 
-    //console.log(letterFrequency);
-    //console.log(result);
+    
+    // Shuffle the board.
+    let currentIndex = result.length;
+    result = result.split("");
 
+    while (currentIndex !== 0) {
+        const randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [result[currentIndex], result[randomIndex]] = [
+            result[randomIndex], result[currentIndex]];
+    }
+
+    result = result.join("");
+
+    const end = Date.now();
+    console.log("board has been generated", end - start);
     return result;
 }
 

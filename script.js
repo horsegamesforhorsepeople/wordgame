@@ -6,9 +6,9 @@ import { solveBoard } from './modules/solver.js';
 
 const start = Date.now();
 // Size of the board.
-const size = 5;
+const size = 4;
 
-const seed = "my little ponycore";
+const seed = "marefriend";
 
 // Apply size of board to CSS.
 document.querySelector(':root').style.setProperty('--board-size', size);
@@ -16,7 +16,7 @@ document.querySelector(':root').style.setProperty('--board-size', size);
 
 // Initiate a playing field.
 const board = generateBoard(seed, size);
-//const board = "aasrhgoitrcghstl";
+//const board = "zztzrhnaecifzzez";
 
 // Load most HTML and CSS.
 loadHTML(board);
