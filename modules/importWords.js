@@ -1,5 +1,5 @@
 const fetchValidWords = () => {
-    return fetch(window.location.href+"/words.txt")
+    return fetch(new URL(location.href).origin + "/words.txt")
         .then(response => response.text())
         .then(data => {
             let validWords = data.split(/\r?\n/)

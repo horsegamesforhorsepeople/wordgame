@@ -1,6 +1,5 @@
 let validWords;
 const startGame = (size, words) => {
-
     validWords = words;
     fetchSize(size);
 
@@ -9,6 +8,7 @@ const startGame = (size, words) => {
     });
     document.body.addEventListener("mouseup", handleMouseUp); 
 
+    resetStats();
 }
 
 let currentWord = "";
@@ -16,6 +16,7 @@ let previousTile, size;
 let alreadyVisited = [];
 let foundWords = [];
 let wordBoxes = [];
+let timeStarted = false;
 const greenColor = "rgba(12, 179, 88, 1)";
 const yellowColor = "rgba(252, 255, 79, 0.7)";
 
@@ -23,18 +24,42 @@ function fetchSize(a) {
     size = a;
 }
 
+function resetStats() {
+    currentWord = "";
+    previousTile, size;
+    alreadyVisited = [];
+    foundWords = [];
+    wordBoxes = [];
+    timeStarted = false;
+}
+
 // Starts the timer.
 function startTimer() {
-    let timeLeft = 80;
+    timeStarted = true;
+    let timeLeft = 79;
     const timer = setInterval(() => {
         document.getElementById("timer").innerText = timeLeft;
-        if (timeLeft === 0)
+        if (timeLeft === 0) {
             clearInterval(timer);
+
+            document.querySelectorAll(".tile-container").forEach((tile) => {
+                tile.removeEventListener("mousedown", handleMouseDown); 
+            });
+
+            document.getElementById("play-button").style.display = "block";
+            document.getElementById("seed-container").style.display = "grid";
+            document.getElementById("show-words").style.display = "block";
+            document.getElementById("daily-button").style.display = "block";
+            document.getElementById("copy-button").style.display = "block";
+        }
         timeLeft--;
     }, 1000);
 }
 
 function handleMouseDown(event) {
+    if (!timeStarted)
+        startTimer();
+
     previousTile = event.target;
     currentWord += event.target.dataset.letter;
     if (event.target.classList.contains("tile-container")) {

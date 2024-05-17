@@ -1,4 +1,4 @@
-const foundWords = [];
+let foundWords = [];
 
 // To solve the board we look at an index and create a three letter long word with DFS.
 // Then we reference that to the tree hashmap (see below). If the word exists we continue
@@ -8,6 +8,8 @@ const solveBoard = (board, words) => {
     const wordMap = parseWords(words);
     const boardIndexes = createIndexMap(board);
     const neighborMap = createNeighborMap(board);
+
+    foundWords = [];
 
     const start = Date.now();
     for (let i = 0; i < board.length; i++) {

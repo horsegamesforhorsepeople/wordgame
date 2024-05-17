@@ -1,10 +1,99 @@
 const loadHTML = (board) => {
-    const gameContainer = createGameContainer();
+
+    let gameContainer = document.getElementById("game-container");
+    if (!gameContainer)
+        gameContainer = createGameContainer();
+    else
+        gameContainer.innerHTML = "";
 
     createGrid(gameContainer, board);
+    
+    if (!document.getElementById("score-container"))
+        createScoreBoard();
+    else {
+        document.getElementById("score-amount").innerText = 0;
+        document.getElementById("words-amount").innerText = 0;
+    }
 
-    createScoreBoard();
+    if (!document.getElementById("seed-container"))
+        createEnterSeed();
 
+    if (!document.getElementById("show-words"))
+        createShowWordsButton();
+
+    if (!document.getElementById("daily-button"))
+        createDailyButton();
+
+    if (!document.getElementById("copy-button"))
+        createCopyButton();
+}
+
+function createCopyButton() {
+    const button = document.createElement("button");
+    button.id = "copy-button";
+    button.innerText = "Share";
+    document.body.append(button);
+}
+
+function createDailyButton() {
+    const button = document.createElement("button");
+    button.id = "daily-button";
+    button.innerText = "Daily";
+    document.body.append(button);
+}
+
+// Creates the "show words" button.
+function createShowWordsButton() {
+    const button = document.createElement("button");
+    button.id = "show-words";
+    button.innerText = "Show words";
+    document.body.append(button);
+}
+
+// Creates the section dedicated to the "enter seed" fields.
+function createEnterSeed() {
+    // Container
+    const seedContainer = document.createElement("div");
+    seedContainer.id = "seed-container";
+
+    // Seed
+    const enterSeedText = document.createElement("label");
+    enterSeedText.innerText = "Seed: ";
+    enterSeedText.htmlFor = "enter-seed-input";
+    enterSeedText.id = "enter-seed-text";
+
+    const enterSeedInput = document.createElement("input");
+    enterSeedInput.id = "enter-seed-input";
+    enterSeedInput.type = "text";
+    enterSeedInput.placeholder = "mares";
+
+    seedContainer.append(enterSeedText);
+    seedContainer.append(enterSeedInput);
+
+    // Size
+    const enterSizeText = document.createElement("label");
+    enterSizeText.innerText = "Size (>2): ";
+    enterSizeText.htmlFor = "enter-size-input";
+    enterSizeText.id = "enter-size-text";
+
+    const enterSizeInput = document.createElement("input");
+    enterSizeInput.id = "enter-size-input";
+    enterSizeInput.type = "text";
+    enterSizeInput.placeholder = "4";
+    enterSizeInput.min = "2";
+    enterSizeInput.value = "4";
+
+    seedContainer.append(enterSizeText);
+    seedContainer.append(enterSizeInput);
+
+    // Play button
+    const playButton = document.createElement("button");
+    playButton.id = "play-button";
+    playButton.innerText = "Play!";
+
+    document.body.append(playButton);
+
+    document.body.append(seedContainer);
 }
 
 // Creates the outer container for the game board.
