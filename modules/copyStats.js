@@ -15,7 +15,7 @@ const copyStats = (board, seed, daily, size) => {
             copyVal += "\n";
     }
 
-    copyVal += "\n" + new URL(location.href).origin;
+    copyVal += "\n" + new URL(location.href).origin + "/wordgame";
     if (daily)
         copyVal += "?daily=true";
     else
